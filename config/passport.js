@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const User = require('./../models/User')
 const setting = require('./setting');
 
-
+const passport = require('passport');
+const TwitterTokenStrategy = require('passport-twitter-token');
 
 
 module.exports = passport => {
@@ -24,3 +25,4 @@ module.exports = passport => {
 
     )
 }
+

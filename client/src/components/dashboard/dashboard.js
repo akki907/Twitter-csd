@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getCurrentProfile } from "./../../actions/profileAction";
 import Spinner from "./../comman/Spinner";
-import TwitterLogin from 'react-twitter-auth';
+// import TwitterLogin from 'react-twitter-auth';
+import TwitterLogin from 'react-twitter-auth/lib/react-twitter-auth-component.js';
 
 class Dashboard extends Component {
   constructor(){
@@ -12,46 +13,61 @@ class Dashboard extends Component {
     this.state = { isAuthenticated: false, twitter: null, token: ''};
   }
   componentDidMount() {
-      console.log('run')
     this.props.getCurrentProfile();
+    this.getToken()
   }
 
+getToken(){
+ return this.token = localStorage.getItem('jwtToken')
+}
 
 onSuccess = (response) => {
-  const token = response.headers.get('x-auth-token');
-  response.json().then(twitter => {
-    if (token) {
-      this.setState({isAuthenticated: true, twitter: twitter, token: token});
-    }
-  });
+  // const token = response.headers.get('x-auth-token');
+  // response.json().then(twitter => {
+  //   if (token) {
+  //     this.setState({isAuthenticated: true, twitter: twitter, token: token});
+  //   }
+  // });
+  this.props.getCurrentProfile();
 };
+
+
 
 onFailed = (error) => {
   // alert(error);
-  console.log('err',error)
+  console.log('errdddddddddddddddd',error)
 };
 
   render() {
     const { user } = this.props.auth;
     const { profile, loading } = this.props.profile;
-    
+    const customHeader = {};
+    customHeader['Authorization'] = this.token;
+
     let dashboardContent;
 
     if (profile == null || loading) {
       dashboardContent = <Spinner />;
     } else {
-      if (profile.twitterHandle == null) {
+      if (profile.twitterHandle.token === null) {
         dashboardContent = (
           <div>
             <p className="lead text-muted">
               Welcome {user.name}
             </p>
             <p>You have not yet setup a profile, please add some info</p>
-           
+            <TwitterLogin loginUrl="http://localhost:9000/api/auth/twitter"
+                      onFailure={this.onFailed}
+                      onSuccess={this.onSuccess}
+                      requestTokenUrl="http://localhost:9000/api/auth/twitterCallback"
+                      showIcon={true}
+                      customHeaders={customHeader}
+                      forceLogin={true}
+                      >
+          <b>Twitter</b> 
+        </TwitterLogin>
 
-            <TwitterLogin loginUrl="http://localhost:3000/api/v1/auth/twitter"
-                    onFailure={this.onFailed} onSuccess={this.onSuccess}
-                    requestTokenUrl="http://localhost:3000/api/v1/auth/twitter/reverse"/>
+          
           </div>
         );
       } else {
@@ -59,9 +75,7 @@ onFailed = (error) => {
           <div>
             <p className="lead text-muted">Welcome {user.name}</p>
             <p>You have not yet setup a profile, please add some info</p>
-            <Link to="/create-profile" className="btn btn-lg btn-info">
-              Create Profile
-            </Link>
+           
           </div>
         );
       }

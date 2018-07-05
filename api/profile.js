@@ -7,6 +7,8 @@ const validProfile = require('./../validators/profile')
 const mongoose = require('mongoose');
 const validateExperienceInput = require('./../validators/validateExperience')
 const validateEducationInput = require('./../validators/validateEducation')
+const Twitter = require('twitter');
+
 // @protected
 router.get('/profile', passport.authenticate('jwt', {
     session: false
@@ -16,7 +18,6 @@ router.get('/profile', passport.authenticate('jwt', {
         })
         .select('-password')
         .exec(function (err, profile) {
-            console.log('err profile',err,profile)
             if (err) return res.json({
                 success: false,
                 message: err

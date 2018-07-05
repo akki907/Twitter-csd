@@ -22,9 +22,23 @@ const userSchema = new Schema({
         trim: true
     },
     twitterHandle: {
-        type: String,
-        trim: true,
-        default:null
+        token: {
+            type: String,
+            trim: true,
+            default: null
+        },
+        tokenSecret: {
+            type: String,
+            trim: true
+        },
+        email: {
+            type: String,
+            trim: true
+        },
+        displayName: {
+            type: String,
+            trim: true
+        }
     },
     createdAt: {
         type: Date,
@@ -52,5 +66,7 @@ userSchema.pre('save', function (next) {
 userSchema.methods.comparePassword = function (password) {
     return bcrypt.compareSync(password, this.password)
 }
+
+
 
 module.exports = mongoose.model('User', userSchema);
